@@ -174,8 +174,6 @@ class Repository {
         "KAWARDHA"
       ]
     },
-    {"state": "Dadra-Nagarhaveli", "districts": []},
-    {"state": "Daman-Diu", "districts": []},
     {
       "state": "Delhi",
       "districts": [

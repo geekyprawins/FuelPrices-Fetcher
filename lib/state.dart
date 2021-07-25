@@ -16,3 +16,4 @@ class StateModel {
     return data;
   }
 }
+
