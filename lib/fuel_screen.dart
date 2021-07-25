@@ -4,6 +4,7 @@ import 'repository.dart';
 import 'fuel_data.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 class FuelPrice extends StatefulWidget {
   @override
@@ -20,6 +21,7 @@ class _FuelPriceState extends State<FuelPrice> {
   String fuelPrice = ' 0.0';
   String fuelUrl = 'https://fuelprice-api-india.herokuapp.com/price/';
   String selectedFuel = 'Petrol';
+  bool showSpinner = false;
   var buttonColor = inactiveColor;
   @override
   void initState() {
@@ -76,6 +78,7 @@ class _FuelPriceState extends State<FuelPrice> {
   void updateFuelData() async {
     setState(() {
       buttonColor = activeColor;
+      showSpinner = true;
     });
     var fuelResponse = await fuelData
         .getFuelData('$fuelUrl$_selectedState/$_selectedDistrict');
@@ -85,6 +88,7 @@ class _FuelPriceState extends State<FuelPrice> {
       } else {
         fuelPrice = fuelResponse[0]['products'][1]['productPrice'];
       }
+      showSpinner = false;
     });
   }
 
@@ -110,135 +114,138 @@ class _FuelPriceState extends State<FuelPrice> {
           style: GoogleFonts.lobster(fontSize: 35),
         )),
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('images/flag-bg.jpg'),
-            fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(
-                Colors.white.withOpacity(0.9), BlendMode.dstATop),
+      body: ModalProgressHUD(
+        inAsyncCall: showSpinner,
+        child: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('images/flag-bg.jpg'),
+              fit: BoxFit.cover,
+              colorFilter: ColorFilter.mode(
+                  Colors.white.withOpacity(0.9), BlendMode.dstATop),
+            ),
           ),
-        ),
-        constraints: BoxConstraints.expand(),
-        child: SafeArea(
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 50, vertical: 30),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.deepOrange.withOpacity(0.3),
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(10.0),
-                    ),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: DropdownButton<String>(
-                      isExpanded: true,
-                      items: _states.map((String dropDownStringItem) {
-                        return DropdownMenuItem<String>(
-                          value: dropDownStringItem,
-                          child: Text(
-                            dropDownStringItem,
-                            style: GoogleFonts.asap(
-                                fontWeight: FontWeight.w500,
-                                letterSpacing: 2.0),
-                          ),
-                        );
-                      }).toList(),
-                      onChanged: (value) => _onSelectedState(value!),
-                      value: _selectedState,
-                    ),
-                  ),
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(0.3),
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(10.0),
-                    ),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: DropdownButton<String>(
-                      isExpanded: true,
-                      items: _districts.map((String dropDownStringItem) {
-                        return DropdownMenuItem<String>(
-                          value: dropDownStringItem,
-                          child: Text(
-                            dropDownStringItem,
-                            style: GoogleFonts.asap(
-                                fontWeight: FontWeight.w500,
-                                letterSpacing: 2.0),
-                          ),
-                        );
-                      }).toList(),
-                      // onChanged: (value) => print(value),
-                      onChanged: (value) => _onSelectedDistrict(value!),
-                      value: _selectedDistrict,
-                    ),
-                  ),
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(0.3),
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(10.0),
-                    ),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: androidDropDownButton(),
-                  ),
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(10.0),
-                    ),
-                    color: buttonColor,
-                  ),
-                  child: TextButton.icon(
-                      style: ButtonStyle(
-                        // backgroundColor: MaterialStateProperty.all<Color>(
-                        //     Colors.green.shade900.withOpacity(0.6)),
-                        foregroundColor: MaterialStateProperty.all(
-                          Colors.white.withOpacity(0.95),
-                        ),
+          constraints: BoxConstraints.expand(),
+          child: SafeArea(
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 50, vertical: 30),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.deepOrange.withOpacity(0.3),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(10.0),
                       ),
-                      onPressed: updateFuelData,
-                      icon: Icon(
-                        FontAwesomeIcons.rupeeSign,
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: DropdownButton<String>(
+                        isExpanded: true,
+                        items: _states.map((String dropDownStringItem) {
+                          return DropdownMenuItem<String>(
+                            value: dropDownStringItem,
+                            child: Text(
+                              dropDownStringItem,
+                              style: GoogleFonts.asap(
+                                  fontWeight: FontWeight.w500,
+                                  letterSpacing: 2.0),
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (value) => _onSelectedState(value!),
+                        value: _selectedState,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withOpacity(0.3),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(10.0),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: DropdownButton<String>(
+                        isExpanded: true,
+                        items: _districts.map((String dropDownStringItem) {
+                          return DropdownMenuItem<String>(
+                            value: dropDownStringItem,
+                            child: Text(
+                              dropDownStringItem,
+                              style: GoogleFonts.asap(
+                                  fontWeight: FontWeight.w500,
+                                  letterSpacing: 2.0),
+                            ),
+                          );
+                        }).toList(),
+                        // onChanged: (value) => print(value),
+                        onChanged: (value) => _onSelectedDistrict(value!),
+                        value: _selectedDistrict,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withOpacity(0.3),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(10.0),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: androidDropDownButton(),
+                    ),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(10.0),
+                      ),
+                      color: buttonColor,
+                    ),
+                    child: TextButton.icon(
+                        style: ButtonStyle(
+                          // backgroundColor: MaterialStateProperty.all<Color>(
+                          //     Colors.green.shade900.withOpacity(0.6)),
+                          foregroundColor: MaterialStateProperty.all(
+                            Colors.white.withOpacity(0.95),
+                          ),
+                        ),
+                        onPressed: updateFuelData,
+                        icon: Icon(
+                          FontAwesomeIcons.rupeeSign,
+                          color: Colors.white,
+                        ),
+                        label: Text(
+                          'Click to get the price',
+                          style: GoogleFonts.asap(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        )),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.green.shade900.withOpacity(0.8),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(10.0),
+                      ),
+                    ),
+                    padding: EdgeInsets.all(10.0),
+                    child: Text(
+                      '$selectedFuel price is \u{20B9}$fuelPrice a litre now!',
+                      style: GoogleFonts.lobster(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 30.0,
                         color: Colors.white,
                       ),
-                      label: Text(
-                        'Click to get the price',
-                        style: GoogleFonts.asap(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      )),
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.green.shade900.withOpacity(0.8),
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(10.0),
                     ),
                   ),
-                  padding: EdgeInsets.all(10.0),
-                  child: Text(
-                    '$selectedFuel price is \u{20B9}$fuelPrice a litre now!',
-                    style: GoogleFonts.lobster(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 30.0,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

@@ -1,3 +1,5 @@
+// @dart=2.9
+
 import 'package:flutter/material.dart';
 import 'package:fuel_prices_india/fuel_screen.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
